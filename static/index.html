@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aether: Multimodal Medical Diagnosis System combining Vision Transformers and Clinical MLPs with attention-based fusion and Grad-CAM explanations.">
+    <title>Aether - Multimodal Medical Diagnosis Suite</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ChartJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Navigation Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-microscope glow-icon"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>AETHER</h1>
+                    <span>Multimodal Medical Diagnosis Suite</span>
+                </div>
+            </div>
+            
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="tab-overview" id="nav-overview">
+                    <i class="fa-solid fa-circle-info"></i> System Overview
+                </button>
+                <button class="nav-tab" data-tab="tab-sandbox" id="nav-sandbox">
+                    <i class="fa-solid fa-stethoscope"></i> Diagnostic Sandbox
+                </button>
+                <button class="nav-tab" data-tab="tab-analytics" id="nav-analytics">
+                    <i class="fa-solid fa-chart-line"></i> Performance Analytics
+                </button>
+            </nav>
+            
+            <div class="system-status-indicator">
+                <span class="status-dot green"></span>
+                <span class="status-text">Backend Connected</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-content">
+            
+            <!-- TAB 1: SYSTEM OVERVIEW -->
+            <section class="tab-pane active" id="tab-overview">
+                <div class="grid-layout cols-2">
+                    <!-- Left: Description and training controls -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-network-wired"></i> Architecture Overview</h2>
+                        </div>
+                        <div class="card-body">
+                            <p class="lead-text">
+                                Aether combines clinical records and medical imaging using a state-of-the-art multimodal fusion architecture.
+                            </p>
+                            
+                            <div class="tech-stack-flow">
+                                <div class="flow-block">
+                                    <div class="block-icon img-bg"><i class="fa-solid fa-image"></i></div>
+                                    <h4>Medical Image Processing</h4>
+                                    <p>Standardized chest X-ray images are processed via a <strong>Vision Transformer (ViT)</strong>, learning spatial correlations between image patches.</p>
+                                </div>
+                                <div class="flow-connector"><i class="fa-solid fa-plus"></i></div>
+                                <div class="flow-block">
+                                    <div class="block-icon clinical-bg"><i class="fa-solid fa-file-waveform"></i></div>
+                                    <h4>Clinical Record processing</h4>
+                                    <p>Structured vitals and lab metrics are projected into token space via a <strong>Multi-Layer Perceptron (MLP)</strong>.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="tech-stack-fusion">
+                                <div class="fusion-block">
+                                    <div class="block-icon fusion-bg"><i class="fa-solid fa-shuffle"></i></div>
+                                    <h4>Cross-Modal Attention Fusion</h4>
+                                    <p>Image tokens and clinical feature representations are projected into a shared latent space. Self-attention modules model their interactions to create a unified diagnostic descriptor.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Model training controller -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-sliders"></i> Engine Training Deck</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-box note">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                <div>
+                                    <strong>Default Mode:</strong> The suite initiates with a high-fidelity synthetic representation of the NIH ChestX-ray14 dataset.
+                                </div>
+                            </div>
+
+                            <form id="training-form" class="standard-form">
+                                <div class="form-group">
+                                    <label for="input-epochs">Training Epochs</label>
+                                    <span class="input-desc">Set the number of training epochs for the multimodal model and its baselines.</span>
+                                    <div class="input-spinner-group">
+                                        <input type="number" id="input-epochs" name="epochs" min="1" max="50" value="5">
+                                        <button type="submit" class="btn btn-primary" id="btn-start-training">
+                                            <i class="fa-solid fa-play"></i> Initiate Training
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Training progress panel -->
+                            <div class="training-progress-panel" id="training-progress-panel">
+                                <h3>Training Status</h3>
+                                <div class="progress-container">
+                                    <div class="progress-bar-glow"></div>
+                                    <div class="progress-bar" id="progress-bar" style="width: 0%;"></div>
+                                </div>
+                                <div class="status-meta">
+                                    <span class="status-msg" id="status-msg">System Idle.</span>
+                                    <span class="status-percent" id="status-percent">0%</span>
+                                </div>
+                                <div class="console-box" id="console-logs">
+                                    <div class="log-line system">[SYSTEM] Aether engine loaded. Ready to run pipeline.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: DIAGNOSTIC SANDBOX & EXPLAINABILITY -->
+            <section class="tab-pane" id="tab-sandbox">
+                <!-- Samples Deck -->
+                <div class="glass-card sample-deck-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-notes-medical"></i> Select Curated Patient Case Studies</h3>
+                    </div>
+                    <div class="samples-grid" id="samples-container">
+                        <!-- Loaded dynamically -->
+                        <div class="sample-card skeleton"></div>
+                        <div class="sample-card skeleton"></div>
+                        <div class="sample-card skeleton"></div>
+                        <div class="sample-card skeleton"></div>
+                    </div>
+                </div>
+
+                <div class="grid-layout cols-2">
+                    <!-- Left Column: Input Sandbox -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-file-medical"></i> Diagnostic Input Sandbox</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="diagnostic-form">
+                                <!-- Image Upload Box -->
+                                <div class="image-upload-wrapper">
+                                    <label>Medical Image (Chest X-ray)</label>
+                                    <div class="drag-drop-zone" id="drag-drop-zone">
+                                        <input type="file" id="image-file" name="file" accept="image/*" class="file-input-hidden">
+                                        <div class="drop-prompt" id="drop-prompt">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <p>Drag and drop image or <span>Browse Files</span></p>
+                                            <span class="file-limits">Supports JPG, PNG (128x128 grayscale recommended)</span>
+                                        </div>
+                                        <div class="drop-preview-container" id="drop-preview-container" style="display: none;">
+                                            <img id="image-preview" src="#" alt="Preview">
+                                            <button type="button" class="btn btn-icon remove-img-btn" id="btn-remove-image">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Clinical Variables Grid -->
+                                <div class="clinical-variables-title">
+                                    <h3>Clinical Records (EHR Vitals & Labs)</h3>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-vitals">
+                                        <i class="fa-solid fa-rotate-left"></i> Reset Vitals
+                                    </button>
+                                </div>
+
+                                <div class="vitals-inputs-grid">
+                                    <!-- Categoricals -->
+                                    <div class="form-group">
+                                        <label for="select-gender">Gender</label>
+                                        <select id="select-gender" name="gender">
+                                            <option value="M">Male (M)</option>
+                                            <option value="F">Female (F)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="select-view">View Position</label>
+                                        <select id="select-view" name="view_pos">
+                                            <option value="PA">PA (Posteroanterior)</option>
+                                            <option value="AP">AP (Anteroposterior)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="select-cough">Cough Severity</label>
+                                        <select id="select-cough" name="cough">
+                                            <option value="None">None</option>
+                                            <option value="Mild">Mild</option>
+                                            <option value="Moderate">Moderate</option>
+                                            <option value="Severe">Severe</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="select-pain">Chest Pain</label>
+                                        <select id="select-pain" name="pain">
+                                            <option value="None">None</option>
+                                            <option value="Dull">Dull</option>
+                                            <option value="Sharp">Sharp</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="vitals-sliders-list">
+                                    <!-- Numericals -->
+                                    <div class="slider-group">
+                                        <div class="slider-meta">
+                                            <label for="slider-age">Patient Age</label>
+                                            <span class="val-display"><span id="val-age">45</span> yrs</span>
+                                        </div>
+                                        <input type="range" id="slider-age" name="age" min="1" max="100" value="45">
+                                    </div>
+
+                                    <div class="slider-group">
+                                        <div class="slider-meta">
+                                            <label for="slider-temp">Body Temperature</label>
+                                            <span class="val-display"><span id="val-temp">36.8</span> °C</span>
+                                        </div>
+                                        <input type="range" id="slider-temp" name="temp" min="35" max="41" step="0.1" value="36.8">
+                                    </div>
+
+                                    <div class="slider-group">
+                                        <div class="slider-meta">
+                                            <label for="slider-spo2">Oxygen Saturation (SpO₂)</label>
+                                            <span class="val-display"><span id="val-spo2">98.0</span> %</span>
+                                        </div>
+                                        <input type="range" id="slider-spo2" name="spo2" min="60" max="100" step="0.5" value="98.0">
+                                    </div>
+
+                                    <div class="slider-group">
+                                        <div class="slider-meta">
+                                            <label for="slider-wbc">White Blood Cell (WBC)</label>
+                                            <span class="val-display"><span id="val-wbc">7000</span> cells/µL</span>
+                                        </div>
+                                        <input type="range" id="slider-wbc" name="wbc" min="2000" max="30000" step="100" value="7000">
+                                    </div>
+
+                                    <div class="slider-group">
+                                        <div class="slider-meta">
+                                            <label for="slider-hr">Heart Rate</label>
+                                            <span class="val-display"><span id="val-hr">75</span> bpm</span>
+                                        </div>
+                                        <input type="range" id="slider-hr" name="hr" min="40" max="180" value="75">
+                                    </div>
+
+                                    <div class="slider-group">
+                                        <div class="slider-meta">
+                                            <label for="slider-sbp">Systolic Blood Pressure</label>
+                                            <span class="val-display"><span id="val-sbp">120</span> mmHg</span>
+                                        </div>
+                                        <input type="range" id="slider-sbp" name="sbp" min="80" max="220" value="120">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-large btn-full-width" id="btn-run-diagnosis">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Execute Multimodal Diagnosis
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Results & Explainability -->
+                    <div class="glass-card">
+                        <div class="card-header flex-header">
+                            <h2><i class="fa-solid fa-square-poll-vertical"></i> Diagnosis & Explanations</h2>
+                            <div class="expl-class-select-box" style="display: none;" id="explain-class-select-wrapper">
+                                <label for="select-explain-class">Explain:</label>
+                                <select id="select-explain-class">
+                                    <!-- Filled dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body empty-state-active" id="diagnostic-results-body">
+                            <!-- Empty State -->
+                            <div class="empty-results-state" id="results-empty-state">
+                                <i class="fa-solid fa-heart-pulse heartbeat-animation"></i>
+                                <h3>Awaiting Input</h3>
+                                <p>Upload a chest X-ray and fill in clinical parameters, or load a case study above and click execute to view findings and machine explanations.</p>
+                            </div>
+
+                            <!-- Real Results (hidden by default) -->
+                            <div class="diagnostic-findings-results" id="results-data-panel" style="display: none;">
+                                <!-- Part 1: Top Findings probabilities -->
+                                <div class="findings-probabilities-box">
+                                    <h3>Findings Probability (NIH ChestX-ray14)</h3>
+                                    <div class="findings-list" id="findings-predictions-list">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Part 2: Multimodal Explainability Visualizers -->
+                                <div class="explainability-workspace">
+                                    <!-- Grad-CAM Box -->
+                                    <div class="explain-item">
+                                        <h4><i class="fa-solid fa-eye"></i> Vision Grad-CAM</h4>
+                                        <div class="gradcam-viewport">
+                                            <canvas id="gradcam-canvas" width="128" height="128"></canvas>
+                                            <img id="gradcam-base-img" src="#" alt="Underlying Xray" style="display: none;">
+                                        </div>
+                                        <span class="img-caption">Highlights image patches driving the transformer classification score.</span>
+                                    </div>
+                                    
+                                    <!-- Clinical Attention Box -->
+                                    <div class="explain-item">
+                                        <h4><i class="fa-solid fa-brain"></i> Clinical Feature Attention</h4>
+                                        <div class="clinical-attention-chart-box">
+                                            <canvas id="clinical-attention-chart"></canvas>
+                                        </div>
+                                        <span class="img-caption">Relative attention weight given to each EHR vital sign in the fusion layer.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: PERFORMANCE ANALYTICS -->
+            <section class="tab-pane" id="tab-analytics">
+                <div class="grid-layout cols-3">
+                    <!-- Multimodal Box -->
+                    <div class="glass-card stat-card multimodal-stat">
+                        <div class="stat-value" id="stat-auc-multimodal">--</div>
+                        <div class="stat-label">Multimodal Fusion AUC</div>
+                    </div>
+                    <!-- Image Baseline Box -->
+                    <div class="glass-card stat-card">
+                        <div class="stat-value" id="stat-auc-image">--</div>
+                        <div class="stat-label">Image-Only ViT AUC</div>
+                    </div>
+                    <!-- Clinical Baseline Box -->
+                    <div class="glass-card stat-card">
+                        <div class="stat-value" id="stat-auc-clinical">--</div>
+                        <div class="stat-label">Clinical-Only MLP AUC</div>
+                    </div>
+                </div>
+
+                <div class="grid-layout cols-2 mt-4">
+                    <!-- Left: Metrics Table -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-table-list"></i> Summary Performance Matrix</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="metrics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Model Variant</th>
+                                        <th>Accuracy</th>
+                                        <th>Precision</th>
+                                        <th>Recall</th>
+                                        <th>F1-Score</th>
+                                        <th>Mean ROC-AUC</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="metrics-table-body">
+                                    <tr>
+                                        <td colspan="6" class="table-empty">No performance records found. Train the model to generate statistics.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right: Comparison Charts -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-chart-simple"></i> ROC-AUC Comparative Analysis</h2>
+                        </div>
+                        <div class="card-body chart-card-body">
+                            <canvas id="performance-comparison-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Class wise performance bar chart -->
+                <div class="glass-card mt-4">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-chart-column"></i> Multi-Label Finding Performance (ROC-AUC per Class)</h2>
+                    </div>
+                    <div class="card-body chart-card-body-wide">
+                        <canvas id="class-comparison-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

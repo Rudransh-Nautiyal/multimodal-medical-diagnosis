@@ -1,0 +1,10 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+data_mock/
+.idea/
+.vscode/
+.DS_Store
+*.pth
+metrics.json
