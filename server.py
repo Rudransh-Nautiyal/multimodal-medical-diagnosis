@@ -166,6 +166,7 @@ def get_samples():
         raise HTTPException(status_code=404, detail="Dataset not initialized.")
         
     df = pd.read_csv(csv_path)
+    df = df.replace({np.nan: None})
     
     samples = []
     # Find normal sample
